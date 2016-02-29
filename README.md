@@ -54,9 +54,6 @@ Rails.application.routes.draw do
       get :not_yet
     end
   end
-  def method_in_routing
-    puts 'Hi! Are we happy?'
-  end
 end
 ```
 
@@ -107,9 +104,6 @@ Rails.application.routes.draw do
 #     get :finished
 #     get :not_yet
 #   end
-# end
-# def method_in_routing
-#   puts 'Hi! Are we happy?'
 # end
 ```
 
@@ -167,13 +161,16 @@ Rails.application.routes.draw do
       get :not_yet
     end
   end
-  def method_in_routing
-    puts 'Hi! Are we happy?'
-  end
 end
 ```
 
-If you update annotated comments, just execute `$ rake flatten_routes:convert` again.
+## Note
+* If you update annotated comments, just execute `$ rake flatten_routes:convert` again.
+
+
+## Dependency
+* Rails '>= 4.0.0', '< 4.2'
+* I do not confirm that this gem works in rails5.x yet...
 
 ## Development
 
