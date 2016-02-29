@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/serihiro/flatten_routes.svg?branch=master)](https://travis-ci.org/serihiro/flatten_routes)
+
 # FlattenRoutes
 
 Convert the routes.rb to not using resource style.

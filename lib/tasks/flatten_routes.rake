@@ -4,7 +4,7 @@ namespace :flatten_routes do
   desc 'Convert routes.rb to not using resource style. The original routes definitions will remain as comment.'
   task convert: :environment do
     routes = FlattenRoutes::Util.routes_from_rails_application
-    new_routes_definition = FlattenRoutes::Util.generate_flatten_routes(routes)
+    new_routes_definition = FlattenRoutes::Util.format_routes(routes)
     new_routes_definition = FlattenRoutes::Util.add_magic_comment(new_routes_definition.join("\n"))
 
     file_name = File.join(Rails.root, 'config', 'routes.rb')
@@ -29,8 +29,8 @@ namespace :flatten_routes do
   desc 'Annotate routes.rb'
   task annotate: :environment do
     routes = FlattenRoutes::Util.routes_from_rails_application
-    new_routes_definition = FlattenRoutes::Util.generate_flatten_routes(routes)
-    new_routes_definition = FlattenRoutes::Util.commentnize(new_routes_definition)
+    new_routes_definition = FlattenRoutes::Util.format_routes(routes)
+    new_routes_definition = FlattenRoutes::Util.commentize(new_routes_definition)
     new_routes_definition = FlattenRoutes::Util.add_magic_comment(new_routes_definition.join("\n"))
 
     file_name = File.join(Rails.root, 'config', 'routes.rb')

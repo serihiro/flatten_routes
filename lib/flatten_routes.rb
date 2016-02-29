@@ -21,7 +21,7 @@ module FlattenRoutes
 
       SEPARATOR = '=>'.freeze
 
-      def generate_flatten_routes(routes)
+      def format_routes(routes)
         routes.map! do |route|
           {
             verb: route[:verb].downcase,
@@ -46,15 +46,15 @@ module FlattenRoutes
         new_routes
       end
 
-      def add_magic_comment(content)
-        "#{MAGIC_COMMENT_START_CONTENT} #{Time.now}\n#{content}\n#{MAGIC_COMMENT_END_CONTENT}\n"
+      def add_magic_comment(content, time = Time.now)
+        "#{MAGIC_COMMENT_START_CONTENT} #{time}\n#{content}\n#{MAGIC_COMMENT_END_CONTENT}\n"
       end
 
       def delete_flatten_routes_definition(content)
         content.gsub(MAGIC_COMMENT_QUOTED_PATTERN, '')
       end
 
-      def commentnize(contents)
+      def commentize(contents)
         return contents if contents.size < 1
 
         contents.map { |content| "##{content}" }
