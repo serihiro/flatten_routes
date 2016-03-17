@@ -23,10 +23,23 @@ module FlattenRoutes
 
       def format_routes(routes)
         routes.map! do |route|
+          reqs = route[:reqs].split(' ')
+          if reqs.size > 1
+            result = reqs[0].gsub(%r{[\w\/#]+}, '\'\&\'')
+            result << ', ' << reqs[1..-1].join('').gsub(%r{(^{|}$)}, '')
+          else
+            result = reqs[0].gsub(%r{[\w\/#]+}, '\'\&\'')
+          end
+
+          # format: false
+          unless %r{\(\.:format\)}.match(route[:path])
+            result << ', :format => false'
+          end
+
           {
             verb: route[:verb].downcase,
             path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:]+}, '\'\&\''),
-            reqs: route[:reqs].gsub(%r{[\w\/#]+}, '\'\&\'')
+            reqs: result
           }
         end
         verb_length, path_length = %i(verb path).map do |key|
