@@ -9,20 +9,44 @@ describe FlattenRoutes::Util do
         {name: 'todo',  verb: 'GET',    path: '/todos/:id(.:format)', reqs: 'todos#show',    :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
         {name: '',      verb: 'PATCH',  path: '/todos/:id(.:format)', reqs: 'todos#update',  :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
         {name: '',      verb: 'PUT',    path: '/todos/:id(.:format)', reqs: 'todos#update',  :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
-        {name: '',      verb: 'DELETE', path: '/todos/:id(.:format)', reqs: 'todos#destroy', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
-        {name: '',      verb: 'GET',    path: '/todos/:id/:test_id(.:format)',  reqs: 'todos#show {:id=>/[-_\w]+/, :test_id=>/.*/}', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
+        {name: '',      verb: 'DELETE', path: '/todos/:id(.:format)', reqs: 'todos#destroy', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'}
       ]
     end
     subject { FlattenRoutes::Util.format_routes(routes) }
 
-    it 'will be formatted' do
-      expect(subject).to eq ["  get    '/todos'              => 'todos#index'",
-                             "  post   '/todos'              => 'todos#create'",
-                             "  get    '/todos/:id'          => 'todos#show'",
-                             "  patch  '/todos/:id'          => 'todos#update'",
-                             "  put    '/todos/:id'          => 'todos#update'",
-                             "  delete '/todos/:id'          => 'todos#destroy'",
-                             "  get    '/todos/:id/:test_id' => 'todos#show', :id=>/[-_\\w]+/,:test_id=>/.*/"]
+    context 'without special syntax routing' do
+      it 'will be formatted' do
+        expect(subject).to eq ["  get    '/todos'     => 'todos#index'",
+                               "  post   '/todos'     => 'todos#create'",
+                               "  get    '/todos/:id' => 'todos#show'",
+                               "  patch  '/todos/:id' => 'todos#update'",
+                               "  put    '/todos/:id' => 'todos#update'",
+                               "  delete '/todos/:id' => 'todos#destroy'"]
+      end
+    end
+
+    context 'with regular expression' do
+      let(:routes) do
+        [
+          {name: '', verb: 'GET', path: '/todos/:id/:test_id(.:format)', reqs: 'todos#show {:id=>/[-_\w]+/, :test_id=>/.*/}', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
+        ]
+      end
+
+      it do
+        expect(subject).to eq ["  get '/todos/:id/:test_id' => 'todos#show', :id=>/[-_\\w]+/,:test_id=>/.*/"]
+      end
+    end
+
+    context 'with redirect' do
+      let(:routes) do
+        [
+          { :name=> 'root', :verb=> 'GET', :path=> '/', :reqs=> 'redirect(301, http://example.com)', :regexp=>"^\\/$"}
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/' => redirect(301,  'http://example.com'), :format => false"]
+      end
     end
   end
 
