@@ -32,7 +32,7 @@ describe FlattenRoutes::Util do
         ]
       end
 
-      it do
+      it 'will be formatted' do
         expect(subject).to eq ["  get '/todos/:id/:test_id' => 'todos#show', :id=>/[-_\\w]+/,:test_id=>/.*/"]
       end
     end
@@ -46,6 +46,18 @@ describe FlattenRoutes::Util do
 
       it 'will be formatted' do
         expect(subject).to eq ["  get '/' => redirect(301,  'http://example.com'), :format => false"]
+      end
+    end
+
+    context 'with parameter for action name' do
+      let(:routes) do
+        [
+          { :name=> '', :verb=> 'GET', :path=> '/hoge/foo/:action(.:format)', :reqs=> 'hoge/foo#:action', :regexp=>"^\\/hoge\\/foo\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$"}
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/hoge/foo/:action' => 'hoge/foo#:action'"]
       end
     end
   end

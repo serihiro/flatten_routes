@@ -32,7 +32,7 @@ module FlattenRoutes
             result << ', ' << reqs[1..-1].join('').gsub(%r{(^{|}$)}, '')
           else
             reqs = route[:reqs].split(' ').each(&:strip)
-            result = reqs[0].gsub(%r{[\w\/#]+}, '\'\&\'')
+            result = reqs[0].gsub(%r{[\w\/#:]+}, '\'\&\'')
           end
 
           # format: false
