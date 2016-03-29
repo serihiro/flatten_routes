@@ -42,7 +42,7 @@ module FlattenRoutes
 
           {
             verb: route[:verb].downcase,
-            path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:]+}, '\'\&\''),
+            path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:\.]+}, '\'\&\''),
             reqs: result
           }
         end

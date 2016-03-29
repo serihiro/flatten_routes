@@ -60,6 +60,18 @@ describe FlattenRoutes::Util do
         expect(subject).to eq ["  get '/hoge/foo/:action' => 'hoge/foo#:action'"]
       end
     end
+
+    context 'with dot path' do
+      let(:routes) do
+        [
+          { :name=> '', :verb=> 'GET', :path=> '/:id/nyans.json(.:format)', :reqs=> 'hoge#nyans', :regexp=>"^\\/([^\\/.?]+)\\/nyans\\.json(?:\\.([^\\/.?]+))?$"}
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/:id/nyans.json' => 'hoge#nyans'"]
+      end
+    end
   end
 
   describe '.add_magic_comment' do
