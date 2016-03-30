@@ -28,7 +28,7 @@ module FlattenRoutes
             result = reqs[0] << ', ' << reqs[1].gsub(%r{[\w\/:\.]+}, '\'\&\'')
           elsif route[:reqs] =~ %r{(=>\/.*?\/)}
             reqs = route[:reqs].split(' ')
-            result = reqs[0].gsub(%r{[\w\/#]+}, '\'\&\'')
+            result = reqs[0].gsub(%r{[\w\/#:]+}, '\'\&\'')
             result << ', ' << reqs[1..-1].join('').gsub(%r{(^{|}$)}, '')
           else
             reqs = route[:reqs].split(' ').each(&:strip)
@@ -42,7 +42,7 @@ module FlattenRoutes
 
           {
             verb: route[:verb].downcase,
-            path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:\.]+}, '\'\&\''),
+            path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:\.\(\)_\-\*']+}, '\'\&\''),
             reqs: result
           }
         end

@@ -72,6 +72,20 @@ describe FlattenRoutes::Util do
         expect(subject).to eq ["  get '/:id/nyans.json' => 'hoge#nyans'"]
       end
     end
+
+    context 'with optional parameters' do
+      let(:routes) do
+        [
+          { :name=> 'apipie_apipie', :verb=> 'GET', :path=> '/apipie(/:version)(/:resource)(/:method)(.:format)',
+            :reqs=>"apipie/apipies#index {:version=>/[^\\/]+/, :resource=>/[^\\/]+/, :method=>/[^\\/]+/}",
+            :regexp=>"^\\/apipie(?:\\/(([^\\/]+)))?(?:\\/(([^\\/]+)))?(?:\\/(([^\\/]+)))?(?:\\.([^\\/.?]+))?$" }
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/apipie(/:version)(/:resource)(/:method)' => 'apipie/apipies#index', :version=>/[^\\/]+/,:resource=>/[^\\/]+/,:method=>/[^\\/]+/"]
+      end
+    end
   end
 
   describe '.add_magic_comment' do
