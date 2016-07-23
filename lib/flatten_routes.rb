@@ -23,12 +23,16 @@ module FlattenRoutes
 
       def format_routes(routes)
         routes.map! do |route|
-          reqs = route[:reqs].split(' ')
-          if reqs.size > 1
-            result = reqs[0].gsub(%r{[\w\/#]+}, '\'\&\'')
+          if route[:reqs] =~ %r{redirect}
+            reqs = route[:reqs].split(',').each(&:strip)
+            result = reqs[0] << ', ' << reqs[1].gsub(%r{[\w\/:\.]+}, '\'\&\'')
+          elsif route[:reqs] =~ %r{(=>\/.*?\/)}
+            reqs = route[:reqs].split(' ')
+            result = reqs[0].gsub(%r{[\w\/#:]+}, '\'\&\'')
             result << ', ' << reqs[1..-1].join('').gsub(%r{(^{|}$)}, '')
           else
-            result = reqs[0].gsub(%r{[\w\/#]+}, '\'\&\'')
+            reqs = route[:reqs].split(' ').each(&:strip)
+            result = reqs[0].gsub(%r{[\w\/#:]+}, '\'\&\'')
           end
 
           # format: false
@@ -38,7 +42,7 @@ module FlattenRoutes
 
           {
             verb: route[:verb].downcase,
-            path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:]+}, '\'\&\''),
+            path: route[:path].gsub(%r{\(\.:format\)},'').gsub(%r{[\w\/:\.\(\)_\-\*']+}, '\'\&\''),
             reqs: result
           }
         end

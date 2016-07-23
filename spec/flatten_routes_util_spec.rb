@@ -9,20 +9,82 @@ describe FlattenRoutes::Util do
         {name: 'todo',  verb: 'GET',    path: '/todos/:id(.:format)', reqs: 'todos#show',    :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
         {name: '',      verb: 'PATCH',  path: '/todos/:id(.:format)', reqs: 'todos#update',  :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
         {name: '',      verb: 'PUT',    path: '/todos/:id(.:format)', reqs: 'todos#update',  :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
-        {name: '',      verb: 'DELETE', path: '/todos/:id(.:format)', reqs: 'todos#destroy', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
-        {name: '',      verb: 'GET',    path: '/todos/:id/:test_id(.:format)',  reqs: 'todos#show {:id=>/[-_\w]+/, :test_id=>/.*/}', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
+        {name: '',      verb: 'DELETE', path: '/todos/:id(.:format)', reqs: 'todos#destroy', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'}
       ]
     end
     subject { FlattenRoutes::Util.format_routes(routes) }
 
-    it 'will be formatted' do
-      expect(subject).to eq ["  get    '/todos'              => 'todos#index'",
-                             "  post   '/todos'              => 'todos#create'",
-                             "  get    '/todos/:id'          => 'todos#show'",
-                             "  patch  '/todos/:id'          => 'todos#update'",
-                             "  put    '/todos/:id'          => 'todos#update'",
-                             "  delete '/todos/:id'          => 'todos#destroy'",
-                             "  get    '/todos/:id/:test_id' => 'todos#show', :id=>/[-_\\w]+/,:test_id=>/.*/"]
+    context 'without special syntax routing' do
+      it 'will be formatted' do
+        expect(subject).to eq ["  get    '/todos'     => 'todos#index'",
+                               "  post   '/todos'     => 'todos#create'",
+                               "  get    '/todos/:id' => 'todos#show'",
+                               "  patch  '/todos/:id' => 'todos#update'",
+                               "  put    '/todos/:id' => 'todos#update'",
+                               "  delete '/todos/:id' => 'todos#destroy'"]
+      end
+    end
+
+    context 'with regular expression' do
+      let(:routes) do
+        [
+          {name: '', verb: 'GET', path: '/todos/:id/:test_id(.:format)', reqs: 'todos#show {:id=>/[-_\w]+/, :test_id=>/.*/}', :regexp=>'^\\/todos\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$'},
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/todos/:id/:test_id' => 'todos#show', :id=>/[-_\\w]+/,:test_id=>/.*/"]
+      end
+    end
+
+    context 'with redirect' do
+      let(:routes) do
+        [
+          { :name=> 'root', :verb=> 'GET', :path=> '/', :reqs=> 'redirect(301, http://example.com)', :regexp=>"^\\/$"}
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/' => redirect(301,  'http://example.com'), :format => false"]
+      end
+    end
+
+    context 'with parameter for action name' do
+      let(:routes) do
+        [
+          { :name=> '', :verb=> 'GET', :path=> '/hoge/foo/:action(.:format)', :reqs=> 'hoge/foo#:action', :regexp=>"^\\/hoge\\/foo\\/([^\\/.?]+)(?:\\.([^\\/.?]+))?$"}
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/hoge/foo/:action' => 'hoge/foo#:action'"]
+      end
+    end
+
+    context 'with dot path' do
+      let(:routes) do
+        [
+          { :name=> '', :verb=> 'GET', :path=> '/:id/nyans.json(.:format)', :reqs=> 'hoge#nyans', :regexp=>"^\\/([^\\/.?]+)\\/nyans\\.json(?:\\.([^\\/.?]+))?$"}
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/:id/nyans.json' => 'hoge#nyans'"]
+      end
+    end
+
+    context 'with optional parameters' do
+      let(:routes) do
+        [
+          { :name=> 'apipie_apipie', :verb=> 'GET', :path=> '/apipie(/:version)(/:resource)(/:method)(.:format)',
+            :reqs=>"apipie/apipies#index {:version=>/[^\\/]+/, :resource=>/[^\\/]+/, :method=>/[^\\/]+/}",
+            :regexp=>"^\\/apipie(?:\\/(([^\\/]+)))?(?:\\/(([^\\/]+)))?(?:\\/(([^\\/]+)))?(?:\\.([^\\/.?]+))?$" }
+        ]
+      end
+
+      it 'will be formatted' do
+        expect(subject).to eq ["  get '/apipie(/:version)(/:resource)(/:method)' => 'apipie/apipies#index', :version=>/[^\\/]+/,:resource=>/[^\\/]+/,:method=>/[^\\/]+/"]
+      end
     end
   end
 
