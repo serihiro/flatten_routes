@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/serihiro/flatten_routes.svg?branch=master)](https://travis-ci.org/serihiro/flatten_routes)
 [![Gem Version](https://badge.fury.io/rb/flatten_routes.svg)](https://badge.fury.io/rb/flatten_routes)
 
 # FlattenRoutes
