@@ -169,8 +169,8 @@ end
 
 
 ## Dependency
-* Rails '>= 4.0.0', '< 4.2'
-* I do not confirm that this gem works in rails5.x yet...
+* Rails '<~ 5.2.0'
+* Supporting Rails 6.x has not finished yet.
 
 ## Development
 
